@@ -66,10 +66,8 @@ format:
   html:
     theme:
       - cosmo
-      - r4ds.scss
     code-link: true
     author-meta: Rafael A. Irizarry
-    include-in-header: plausible.html
     callout-appearance: simple
 
 knitr:
