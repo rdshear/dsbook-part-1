@@ -249,7 +249,7 @@ get_sentiments("afinn")
 
 The `loughran` and `nrc` lexicons provide several different sentiments. Note that these also have to be downloaded the first time you use them.
 
-```{r}
+```{r eval=FALSE}
 get_sentiments("loughran") |> count(sentiment)
 ```
 
