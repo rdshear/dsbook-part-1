@@ -23,7 +23,7 @@ Hans Rosling conveyed actual data-based trends in a dramatic way of his own, usi
 
 To answer these questions, we will be using the `gapminder` dataset provided in **dslabs**. This dataset was created using a number of spreadsheets available from the Gapminder Foundation. You can access the table like this:
 
-```{r load-libraries, message=FALSE, echo=TRUE}
+```{r load-libraries, message=FALSE, echo=TRUE, cache=FALSE}
 library(tidyverse)
 library(dslabs)
 gapminder |> as_tibble()
@@ -221,7 +221,7 @@ For trend plots we recommend labeling the lines rather than using legends since 
 
 We demonstrate how we can do this using the `geomtextpath` package. We define a data table with the label locations and then use a second mapping just for these labels:
 
-```{r labels-better-than-legends}
+```{r labels-better-than-legends, cache=FALSE}
 library(geomtextpath)
 
 gapminder |> 
@@ -417,7 +417,7 @@ gridExtra::grid.arrange(p1, p2, nrow = 1)
 
 In cases in which we are concerned that the boxplot summary is too simplistic, we can show stacked smooth densities or histograms. We refer to these as *ridge plots*. Because we are used to visualizing densities with values in the x-axis, we stack them vertically. Also, because more space is needed in this approach, it is convenient to overlay them. The package **ggridges** provides a convenient function for doing this. Here is the income data shown above with boxplots but with a *ridge plot*.
 
-```{r ridge-plot, message=FALSE}
+```{r ridge-plot, message=FALSE, cache=FALSE}
 library(ggridges)
 p <- gapminder |> 
   filter(year == past_year & !is.na(dollars_per_day)) |>
@@ -670,7 +670,7 @@ Throughout this section, we have been comparing regions of the world. We have se
 
 We define a few more regions and compare the averages across regions:
 
-```{r ecological-fallacy-averages, echo=FALSE}
+```{r ecological-fallacy-averages, echo=FALSE, cache=FALSE}
 library(ggrepel)
 gapminder <- gapminder |> 
   mutate(group = case_when(
@@ -723,7 +723,7 @@ Now, back to our plot. Based on the plot above, do we conclude that a country wi
 
 Jumping to this conclusion based on a plot showing averages is referred to as the *ecological fallacy*. The almost perfect relationship between survival rates and income is only observed for the averages at the region level. Once we show all the data, we see a somewhat more complicated story:
 
-```{r ecological-fallacy-all-data, echo=FALSE}
+```{r ecological-fallacy-all-data, echo=FALSE, cache=FALSE}
 library(ggrepel)
 highlight <- c("Sierra Leone", "Mauritius",  "Sudan", "Botswana", "Tunisia",
                "Cambodia","Singapore","Chile", "Haiti", "Bolivia",

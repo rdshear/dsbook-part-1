@@ -11,7 +11,7 @@ The principles are mostly based on research related to how humans detect pattern
 We will be using these libraries:
 
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, cache=FALSE}
 library(tidyverse)
 library(dslabs)
 library(gridExtra)
@@ -34,7 +34,7 @@ browsers <- data.frame(Browser = rep(c("Opera","Safari","Firefox","IE","Chrome")
 To illustrate how some of these strategies compare, let's suppose we want to report the results from two hypothetical polls regarding browser preference taken in 2000 and then 2015. For each year, we are simply comparing five quantities – the five percentages. A widely used graphical representation of percentages, popularized by Microsoft Excel, is the pie chart:
 
 
-```{r piechart,  echo=FALSE}
+```{r piechart,  echo=FALSE, cache=FALSE}
 library(ggthemes)
 p1 <- browsers |> ggplot(aes(x = "", y = Percentage, fill = Browser)) +
   geom_bar(width = 1, stat = "identity", col = "black")  + coord_polar(theta = "y") +
@@ -93,7 +93,7 @@ Notice how much easier it is to see the differences in the barplot. In fact, we 
 
 If for some reason you need to make a pie chart, label each pie slice with its respective percentage so viewers do not have to infer them from the angles or area:
 
-```{r excel-barplot, warning = FALSE, message=FALSE, echo=FALSE}
+```{r excel-barplot, warning = FALSE, message=FALSE, echo=FALSE, cache=FALSE}
 library(scales)
 browsers <- filter(browsers, Year == 2015)
 at <- with(browsers, 100 - cumsum(c(0,Percentage[-length(Percentage)])) - 0.5*Percentage)  
@@ -560,7 +560,7 @@ dat |>
 An advantage of the slope chart is that it permits us to quickly get an idea of changes based on the slope of the lines. Although we are using angle as the visual cue, we also have position to determine the exact values. Comparing the improvements is a bit harder with a scatterplot:
 
 
-```{r scatter-plot-instead-of-slope, echo=FALSE}
+```{r scatter-plot-instead-of-slope, echo=FALSE, cache=FALSE}
 library(ggrepel)
 west <- c("Western Europe","Northern Europe","Southern Europe",
           "Northern America","Australia and New Zealand")
@@ -665,7 +665,7 @@ library(RColorBrewer)
 display.brewer.all(type="seq")
 ```
 
-```{r r-color-brewer-seq, fig.height=3.5, echo=FALSE}
+```{r r-color-brewer-seq, fig.height=3.5, echo=FALSE, cache=FALSE}
 library(RColorBrewer)
 rafalib::mypar()
 display.brewer.all(type="seq")
@@ -829,7 +829,7 @@ d. Percentages should be shown as a pie chart.
   
 3\. Take a look at the following two plots. They show the same information: 1928 rates of measles across the 50 states.
 
-```{r measels-exercise, fig.height = 5, echo=FALSE}
+```{r measels-exercise, fig.height = 5, echo=FALSE, cache=FALSE}
 library(gridExtra)
 p1 <- us_contagious_diseases |> 
   filter(year == 1928 & disease=="Measles" & count>0 & !is.na(population)) |> 
@@ -922,7 +922,7 @@ by region, showing all the points and ordering the regions by their median rate.
 
 8\. The plots below show three continuous variables. 
 
-```{r pseudo-3d-exercise, fig.width=7, fig.height = 3.708,  echo=FALSE}
+```{r pseudo-3d-exercise, fig.width=7, fig.height = 3.708,  echo=FALSE, cache=FALSE}
 library(scatterplot3d)
 library(RColorBrewer)
 set.seed(1)

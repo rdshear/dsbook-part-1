@@ -23,7 +23,7 @@ Most of the examples will come from the second case study which deals with self-
 
 ## The stringr package {#sec-stringr}
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, cache=FALSE}
 library(tidyverse)
 library(stringr)
 ```
@@ -74,7 +74,7 @@ Finally, note that in this table we mention _groups_. These will be explained in
 
 In this section we introduce some of the more simple string processing challenges with the following datasets as an example:
 
-```{r,message=FALSE, warning=FALSE}
+```{r,message=FALSE, warning=FALSE, cache=FALSE}
 library(rvest)
 url <- paste0("https://en.wikipedia.org/w/index.php?title=",
               "Gun_violence_in_the_United_States_by_state",
@@ -87,7 +87,7 @@ murders_raw <- read_html(url) |>
 
 The code above shows the first step in constructing the dataset
 
-```{r}
+```{r cache=FALSE}
 library(dslabs)
 ```
 
@@ -882,7 +882,7 @@ convert_format <- function(s){
 
 We can also write a function that converts words to numbers:
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, cache=FALSE}
 library(english)
 words_to_numbers <- function(s){
   s <- str_to_lower(s)
@@ -923,7 +923,7 @@ tab |> separate(x, c("feet", "inches"), sep = "'")
 
 The `extract` function from the __tidyr__ package lets us use regex groups to extract the desired values. Here is the equivalent to the code above using `separate` but using `extract`:  
 
-```{r}
+```{r cache=FALSE}
 library(tidyr)
 tab |> extract(x, c("feet", "inches"), regex = "(\\d)'(\\d{1,2})")
 ```
@@ -1029,7 +1029,7 @@ x <- x[-1]
 
 To convert our list into a data frame, we can use a shortcut provided by the `map` functions in the __purrr__ package. The map function applies the same function to each element in a list. So if we want to extract the first entry of each element in `x`, we can write:
 
-```{r}
+```{r cache=FALSE}
 library(purrr)
 map(x, function(y) y[1]) |> head(2)
 ```
@@ -1080,7 +1080,7 @@ x |> as_tibble() |>
 
 One of the datasets provided in __dslabs__ shows scientific funding rates by gender in the Netherlands:
 
-```{r}
+```{r cache=FALSE}
 library(dslabs)
 research_funding_rates |> 
   select("discipline", "success_rates_men", "success_rates_women")
@@ -1207,7 +1207,7 @@ Another common operation involving strings is recoding the names of categorical 
 Here is an example that shows how to rename countries with long names:
 
 
-```{r}
+```{r cache=FALSE}
 library(dslabs)
 ```
 
