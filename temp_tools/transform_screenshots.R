@@ -1,73 +1,67 @@
 # transform_screenshots
-# ~/Desktop/transform_screenshots.R
+# ./temptools/transform_screenshots.R
 library(tidyverse)
+library(codetools)
+
+cw <- codetools::makeCodeWalker(call = function (e, w) {
+    result <- NULL
+    if (mode(e) == "call" && identical(e[[1]], target_call)) {
+      result <- deparse(e)
+    }
+    for (ee in as.list(e)) {
+      if (!missing(ee)) 
+        walkCode(ee, w)
+    }
+    return(result)
+  },
+  leaf = function(e, w) NULL)
 
 
-getSource <- funcion(loc) {
-  loc <- "~/Projects/dsbook-part-1/R/getting-started.qmd"
+loc <- "~/Projects/dsbook-part-1/R/getting-started.qmd"
 
-  a <- data.frame(src = readLines(loc))
-  fences <- str_starts(a$src, '```')
-  if (sum(fences) %%2 != 0)
-    error("Unbalanced chunk boundries")
-
-x <- tibble(src = readLines(loc)) |>
-  mutate(fences =  str_starts(a$src, '```'), 
-          chunk_mask = cumsum(fences)%%2 != 0,
-          is_code = chunk_mask & !fences,
-          is_header =!lag(fences, 1, default = FALSE) & 
-            fences & !lag(is_code, 1, default = FALSE),
-          chunk_parameter = 
-            str_split(str_split_i(
-              str_split_i(src, fixed("}"), 1), 
-              fixed("```{"), -1), "[,]\\s*"),
-          language = chunk_parameter[[1]][1]
-         )
-# TODO DEBUG
-
-  assign_in(is_header, str_split(str_split_i(
-    str_split_i(a$src[a$is_header], fixed("}"), 1), fixed("```{"), -1), 
-    "[,]\\s*"))
-,
-  a$chunk_param[a$is_header] <- str_split(str_split_i(
-        str_split_i(a$src[a$is_header], fixed("}"), 1), fixed("```{"), -1), 
-      "[,]\\s*")
-  a$chunk_param <- if_else(a$chunk_param == '```', 
-                           rep_len(list(), nrow(a)), a$chunk_param)
-
-  
-  x <- header_values[1]
-
-    tokens <- str_split(x, pattern = "\\s+")[[1]]
-  
-  print(tokens)
-  
+src <- readLines(loc)
+fences <-  which(str_starts(src, '```'))
+if (length(fences) %% 2 != 0) {
+  stop("Unbalanced chunk fences")
 }
+chunks <- matrix(fences, ncol = 2, byrow = TRUE)
+colnames(chunks) <- c("start", "end")
 
+chunks <- as_tibble(chunks) |>
+   mutate(header = str_split(str_split_i(
+              str_split_i(substring(src[start], 4), fixed("}"), 1), 
+              fixed("{"), -1), "[,]\\s*"),
+          lan =  sapply(header, (\(u) {
+              result <- u[[1]][1]
+              if (result == "")
+                result = "r"
+              result
+              })),
+          params = sapply(header, (\(u) u[-1]))
+          )
 
-fn <- "~/Projects/dsbook-part-1/R/getting-started.qmd"
+target_call = quote(knitr::include_graphics)
 
-
-
-targets <- grep("knitr::include_graphics", src, fixed = TRUE)
-
-lno <- targets[1]
-line <- src[lno]
-line
-t <- str2lang(line)
-as.list(t)
-t[1]
-length(t)
-
-for (line_num in targets) {
-
-  line <- src[line_num]
-  t <- str2lang(line)
-  if (length(t) != 2) {
-    browser()
+apply(chunks[chunks$lan == "r",], 1, (\(df) {
+  code <- src[(df$start + 1):(df$end - 1)]
+  cat(sprintf("Parsing lines %d-%d\n", df$start, df$end))
+  ptree <- tryCatch(parse(text = code, keep.source = TRUE),
+                error = function(e) {
+                  print(e)
+                  return(NULL)
+                  }
+        )
+  if (is.null(ptree)) {
+      cat(sprintf("Failure in lines %d-%d\n", df$start, df$end))
+  } else
+  {
+    walk_result <- codetools::walkCode(ptree[[1]], cw)
+    if (!is.null(walk_result)) {
+      # TODO: NEW STUFF GOES HERE
+      # browser()
+      cat("Walk:",walk_result, "\n")
+    }
   }
- 
-  print(t)
-  print(pryr::call_tree(t))
-  
-}
+  # cat(sprintf("----%d,%d ... %s\n", df$start, df$end, df$params))
+  # cat(print(lines))
+}))
