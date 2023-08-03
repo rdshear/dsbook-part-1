@@ -2,12 +2,24 @@
 # ./temptools/transform_screenshots.R
 library(tidyverse)
 
+
+
 walkCode <- function (e)
 {
-  if (typeof(e) == "language") {
-    if (mode(e) == "call" && identical(e[[1]], target_call)) {
+  if (typeof(e) == "language" && mode(e) == "call") {
+    
+    # Transform kniter::include_graphics() calls
+    if (identical(e[[1]], quote(knitr::include_graphics))) {
       return(e)
     }
+    
+    # capture assigments to variable named "img_path"
+    if (mode(e[[1]]) == "name" && e[[1]] == "<-" && mode(e[[2]]) == "name" &&
+      e[[2]] == "img_path") {
+        return(e)
+    }
+
+    # No special intervention required, continue processing the parse tree
     if (!(typeof(e[[1]]) %in% c("symbol", "character"))) {
       for (ee in as.list(e)) {
         if (!missing(ee))
@@ -19,6 +31,8 @@ walkCode <- function (e)
 }
 
 loc <- "~/Projects/dsbook-part-1/R/getting-started.qmd"
+
+target_env <- new.env()
 
 src <- readLines(loc)
 
@@ -50,8 +64,6 @@ chunks <- as_tibble(chunks) |>
     })),
     params = sapply(header, (\(u) u[-1]))
   )
-
-target_call = quote(knitr::include_graphics)
 
 apply(chunks[chunks$lan == "r", ], 1, (\(df) {
   code <- src[(df$start + 1):(df$end - 1)]
