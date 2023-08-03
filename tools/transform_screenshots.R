@@ -1,24 +1,65 @@
 # transform_screenshots
 # ./temptools/transform_screenshots.R
 library(tidyverse)
+library(rlang)
+library(parsermd)
 
+## TODO parsermd...Q: quad-ticks?
+
+# Table of transformations to apply to the code
+# name - short name of the transformation
+# condition - the selection criterion for the node (boolean expression)
+# operation - the function to be performed on the result (function)
+# postBlockText - TRUE => place the result after the code chunk
+
+xformTab <- list(
+  
+  # capture assigments to variable named "img_path"
+  getImgPath = list(
+    condition = function(e) {
+      mode(e[[1]]) == "name" && e[[1]] == "<-" && 
+        mode(e[[2]]) == "name" && e[[2]] == "img_path"
+    },
+    operation = function(e) {
+      "img_path"
+    },
+    removeSource = TRUE,
+    postBlockTest = FALSE
+  ),
+  
+  # Transform kniter::include_graphics() calls
+  renderImage = list(
+    condition = function(e) {
+      identical(e[[1]], quote(knitr::include_graphics))
+    },
+    operation = function(e) {
+      "()[location]"
+    },
+    removeSource = TRUE,
+    postBlockTest = TRUE
+  ),
+  
+  # template
+  extra = list(
+    condition = function(e) {
+      TRUE
+    },
+    operation = function(e) {
+      NULL
+    },
+    removeSource = FALSE,
+    postBlockTest = FALSE
+  )
+)
 
 
 walkCode <- function (e)
 {
   if (typeof(e) == "language" && mode(e) == "call") {
-    
-    # Transform kniter::include_graphics() calls
-    if (identical(e[[1]], quote(knitr::include_graphics))) {
-      return(e)
+    for (xform in xformTab) {
+      if (xform$condition(e))
+        return(list(xform = xform, e = e))
     }
-    
-    # capture assigments to variable named "img_path"
-    if (mode(e[[1]]) == "name" && e[[1]] == "<-" && mode(e[[2]]) == "name" &&
-      e[[2]] == "img_path") {
-        return(e)
-    }
-
     # No special intervention required, continue processing the parse tree
     if (!(typeof(e[[1]]) %in% c("symbol", "character"))) {
       for (ee in as.list(e)) {
@@ -81,8 +122,17 @@ apply(chunks[chunks$lan == "r", ], 1, (\(df) {
   }
   else {
     target <- lapply(ptree, (\(u) walkCode(u)))
-    print(target)
-    cat(rlang::expr_deparse(ptree))
+    
+    # remove expressions if necessary
+    mask <- sapply(target, (\(u) u$xform$removeSource))
+    if (!all(mask)) {
+      code <- as.list(ptree[!mask])
+    }
+
+    # TODO remove empty chunks
+    
+    # TODO add post-text
     browser()
+    
   }
 }))
