@@ -2,7 +2,7 @@
 # ./temptools/transform_screenshots.R
 library(tidyverse)
 library(rlang)
-library(parsermd)
+#library(parsermd)
 
 ## TODO parsermd...Q: quad-ticks?
 
@@ -10,46 +10,49 @@ library(parsermd)
 # name - short name of the transformation
 # condition - the selection criterion for the node (boolean expression)
 # operation - the function to be performed on the result (function)
+# removeSource - if true, remove the source code
 # postBlockText - TRUE => place the result after the code chunk
 
+xformTabEntry <- function(condition = function(e) FALSE,
+  operation = function(e) "",
+  removeSource = FALSE,
+  postBlockText = FALSE
+)
+{
+  list(condition = condition, 
+       operation = operation, 
+       removeSource = removeSource, 
+       postBlockText = postBlockText)
+}
+
 xformTab <- list(
-  
   # capture assigments to variable named "img_path"
-  getImgPath = list(
+  getImgPath = xformTabEntry(
     condition = function(e) {
       mode(e[[1]]) == "name" && e[[1]] == "<-" && 
         mode(e[[2]]) == "name" && e[[2]] == "img_path"
     },
+    # TODO reduce the image path and store
     operation = function(e) {
-      "img_path"
+      "img_path+TODO PUSH TO environment"
     },
     removeSource = TRUE,
-    postBlockTest = FALSE
+    postBlockText = FALSE
   ),
   
   # Transform kniter::include_graphics() calls
-  renderImage = list(
+  renderImage = xformTabEntry(
     condition = function(e) {
       identical(e[[1]], quote(knitr::include_graphics))
     },
     operation = function(e) {
-      "()[location]"
+      "()[location]" #TODO make it real
     },
     removeSource = TRUE,
-    postBlockTest = TRUE
+    postBlockText = TRUE
   ),
   
-  # template
-  extra = list(
-    condition = function(e) {
-      TRUE
-    },
-    operation = function(e) {
-      NULL
-    },
-    removeSource = FALSE,
-    postBlockTest = FALSE
-  )
+  default = xformTabEntry()
 )
 
 
@@ -68,7 +71,7 @@ walkCode <- function (e)
       }
     }
   }
-  return(NULL)
+  return(list(xform = xformTab$default, e = e))
 }
 
 loc <- "~/Projects/dsbook-part-1/R/getting-started.qmd"
@@ -103,36 +106,43 @@ chunks <- as_tibble(chunks) |>
         result = "r"
       result
     })),
-    params = sapply(header, (\(u) u[-1]))
+    params = sapply(header, (\(u) u[-1])),
+    postChunkText = list(character())
   )
 
-apply(chunks[chunks$lan == "r", ], 1, (\(df) {
-  code <- src[(df$start + 1):(df$end - 1)]
-  cat(sprintf("Parsing lines %d-%d\n", df$start, df$end))
-  
-  ptree <- tryCatch(
-    parse(text = code, keep.source = TRUE),
+chunks$code = mapply((\(s, e) src[s:e]), chunks$start + 1, chunks$end - 1)
+
+# TODO process chunk parameters
+
+for (i in seq(nrow(chunks))) {
+  if (chunks$lan[i] == "r") {
+    ptree <- tryCatch(
+    parse(text = chunks$code[i][[1]], keep.source = TRUE),
     error = function(e) {
       print(e)
       return(NULL)
     }
   )
   if (is.null(ptree)) {
-    cat(sprintf("Failure in lines %d-%d\n", df$start, df$end))
+    cat(sprintf("Failure in lines %d-%d\n", chunks$start[i], chunks$end[i]))
   }
   else {
     target <- lapply(ptree, (\(u) walkCode(u)))
-    
     # remove expressions if necessary
     mask <- sapply(target, (\(u) u$xform$removeSource))
-    if (!all(mask)) {
-      code <- as.list(ptree[!mask])
+    print(mask)
+    if (any(mask)) {
+        chunks$code[i] <- list(deparse(as.list(target[!mask])))
     }
+    
+    # add post-chunk text
+    chunks$postChunkText[i] <- list(lapply(target, (\(u) ifelse(u$xform$postBlockText, 
+                                  u$xform$operation(u$e), ""))))
+  }
 
     # TODO remove empty chunks
     
-    # TODO add post-text
-    browser()
     
   }
-}))
+}
+
