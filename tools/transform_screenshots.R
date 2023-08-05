@@ -9,16 +9,11 @@ library(formatR)
 rm(list = ls())
 
 base_dir <- "~/Projects/dsbook-part-1/R/"
-# target_dir <- base_dir
-target_dir <- "~/temp/"
+target_dir <- base_dir
+# target_dir <- "~/temp/"
 file_name <- "getting-started.qmd"
 source_location <- file.path(base_dir, file_name)
 target_location <- file.path(target_dir, file_name)
-
-
-
-#library(parsermd) TODO Q: quad-ticks?
-
 
 # Transform certain screenshot file locations
 # screenshots <- list.files(file.path(img_path, "windows-screenshots"))
@@ -97,19 +92,22 @@ xformTab <- list(
     operation = function(e) {
       path1 <- parser_env$screenshot_path
       e1 <- e[[2]]
-      # TODO: Deal with screenshots[5:6]
       if (e1[[1]] == '[' && is.symbol(e1[[2]])) {
         vname <- as.character(e1[[2]])
         if (endsWith(as.character(vname), "screenshots")) {
         path2 <-  ifelse(startsWith(vname, "mac"), "mac", "win")
-        e[[2]] <- glue("{path1}/{path2}/{path2}-img-{e1[[3]]}.png")
+        #eval(e1[[3]])
+
+        u <- vapply(eval(e1[[3]]), 
+             (\(idx)  glue("{path1}/{path2}/{path2}-img-{idx}.png")), "")
         
         }
+      } else {
+        u <- eval(e[[2]], envir = as.list(parser_env))
       }
-      u <- eval(e[[2]], envir = as.list(parser_env))
       # TODO Options, possible captions
+      # TODO Fences for multiples?
       str_glue("![]({u})")
-      
     }
     ,
     removeSource = TRUE,
