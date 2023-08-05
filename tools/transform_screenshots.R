@@ -9,6 +9,7 @@ library(formatR)
 rm(list = ls())
 
 base_dir <- "~/Projects/dsbook-part-1/R/"
+# target_dir <- base_dir
 target_dir <- "~/temp/"
 file_name <- "getting-started.qmd"
 source_location <- file.path(base_dir, file_name)
@@ -63,6 +64,31 @@ xformTab <- list(
     postBlockText = FALSE
   ),
   
+  # Remove supurfluous codeassignments to screenshots, mac_screenshots
+  # or direct calls to opts_chunk$set
+  deleteScreenshotRefs = xformTabEntry(
+    condition = function(e) {
+      deparse(e[[1]]) == "knitr::opts_chunk$set" ||
+      (
+        mode(e[[1]]) == "name" && e[[1]] == "<-" && 
+        mode(e[[2]]) == "name" && 
+        as.character(e[[2]]) %in% c("screenshots", "mac_screenshots")
+      )
+    },
+    removeSource = TRUE
+  ),
+  
+  # Remove if knitr::is_html_output... headers and knitr::opts_chunk$set
+  deleteScreenshotRefs = xformTabEntry(
+    condition = function(e) {
+      # HACK rough heuristic
+      e[[1]] == "if" && 
+        e[[2]] == "knitr::is_html_output()" && length(e[[3]]) > 1 && 
+        startsWith(as.character(e[[3]][2]), "knitr::opts_chunk$set(")
+    },
+    removeSource = TRUE
+  ),
+  
   # Transform kniter::include_graphics() calls
   renderImage = xformTabEntry(
     condition = function(e) {
@@ -81,7 +107,8 @@ xformTab <- list(
         }
       }
       u <- eval(e[[2]], envir = as.list(parser_env))
-      str_glue("()[{u}]")
+      # TODO Options, possible captions
+      str_glue("![]({u})")
       
     }
     ,
@@ -149,7 +176,7 @@ chunks <- as_tibble(chunks) |>
   )
 
 chunks$code = mapply((\(s, e) src[s:e]), chunks$start + 1, chunks$end - 1)
-
+# TODO: do the loop twice and put this at the head of the second loop
 # emit the lines before the first chunk, if any
 if (chunks$start[1] > 1) {
   dst <- append(dst, src[1:(chunks$start[1] - 1)])
@@ -172,7 +199,7 @@ for (i in seq(nrow(chunks))) {
   else {
     target <- lapply(ptree, (\(u) walkCode(u)))
     # remove expressions if necessary
-    mask <- sapply(target, (\(u) u$xform$removeSource))
+    mask <- vapply(target, (\(u) u$xform$removeSource), TRUE)
     if (any(mask)) {
       chunks$codeRemoved[i] <- TRUE
       # suppress spurious warning about change in element count
@@ -180,10 +207,11 @@ for (i in seq(nrow(chunks))) {
         chunks$code[i] <- ""
       } else
       {
-      suppressWarnings(
-        chunks$code[i] <- str_split(tidy_source(
-            text = as.character(sapply(target[!mask], (\(u) u$e))),
-            output = FALSE, width.cutoff = 20, args.newline = TRUE)$text.tidy, "\\n"))
+        # supressWarnings due to nuisance warning of change in vector length
+        suppressWarnings(
+          chunks$code[i] <- str_split(tidy_source(
+              text = as.character(sapply(target[!mask], (\(u) u$e))),
+              output = FALSE, width.cutoff = 20, args.newline = TRUE)$text.tidy, "\\n"))
       }
     }
     
@@ -210,6 +238,11 @@ for (i in seq(nrow(chunks))) {
                                     nrow(src), chunks$start[i + 1] - 1)])
   }
 } # end for 
+
+# remove extra empty lines
+dst <- rle(trim(dst))
+dst$lengths[dst$values == "" & dst$lengths > 1] <- 1
+dst <- inverse.rle(dst)
 
 write_lines(dst, target_location)
 
