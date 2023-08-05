@@ -199,14 +199,12 @@ for (i in seq(nrow(chunks))) {
   } # end if - is r chunk
   
   # generate the ouput starting here
-
-  if (length(unlist(chunks$code[i])) > 0) {
+  x <- unlist(chunks$code[i])
+  if (!identical(x, "")) {
   # only generate the chunk if there is some code there
-    dst <- append(dst, c(src[chunks$start[i]], unlist(chunks$code[i]), 
-                         src[chunks$end[i]], unlist(chunks$postChunkText[i])))
+    dst <- append(dst, c(src[chunks$start[i]], x, src[chunks$end[i]]))
   }
-  print(i)
-  cat(dst, sep = "\n")
+  dst <- append(dst, unlist(chunks$postChunkText[i]))
   if (chunks$end[i] < length(src)) {
     dst <- append(dst, src[(chunks$end[i] + 1):ifelse(i >= nrow(chunks), 
                                     nrow(src), chunks$start[i + 1] - 1)])
