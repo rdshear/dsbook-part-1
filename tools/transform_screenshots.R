@@ -5,6 +5,9 @@ library(rlang)
 library(glue)
 library(formatR)
 
+# for debugging...clear all variables from the environment
+rm(list = ls())
+
 base_dir <- "~/Projects/dsbook-part-1/R/"
 target_dir <- "~/temp/"
 file_name <- "getting-started.qmd"
@@ -77,8 +80,7 @@ xformTab <- list(
         
         }
       }
-      u <- absolute_to_relative(eval(e[[2]], envir = as.list(parser_env)), 
-                                base_dir)
+      u <- eval(e[[2]], envir = as.list(parser_env))
       str_glue("()[{u}]")
       
     }
@@ -109,28 +111,11 @@ walkCode <- function (e)
   return(list(xform = xformTab$default, e = e))
 }
 
-# utility function to create normalized path relative to qmd location
-absolute_to_relative <- function(absolute_path, working_dir = getwd()) {
-  
-  # temporily go to the reference working directory for file exsitence check
-  wd <- getwd()
-  tryCatch({
-  setwd(working_dir)
-  absolute_path <- normalizePath(absolute_path)
-  working_dir <- normalizePath(working_dir)
-  }, finally = setwd(wd))
-  
-  if (startsWith(absolute_path, working_dir)) {
-    return(substring(absolute_path, nchar(working_dir) + 2))
-  } else {
-    return(absolute_path)
-  }
-}
-
 # For realized values from the parse tree available to downstream nodes
 parser_env <- new.env()
 
 src <- readLines(source_location)
+dst <- character()
 
 # ignore quadtick chunks
 quadticks <- cumsum(str_starts(src, '````')) %% 2 == 1
@@ -165,6 +150,11 @@ chunks <- as_tibble(chunks) |>
 
 chunks$code = mapply((\(s, e) src[s:e]), chunks$start + 1, chunks$end - 1)
 
+# emit the lines before the first chunk, if any
+if (chunks$start[1] > 1) {
+  dst <- append(dst, src[1:(chunks$start[1] - 1)])
+}
+
 # TODO process chunk parameters
 
 for (i in seq(nrow(chunks))) {
@@ -184,8 +174,17 @@ for (i in seq(nrow(chunks))) {
     # remove expressions if necessary
     mask <- sapply(target, (\(u) u$xform$removeSource))
     if (any(mask)) {
-        chunks$code[i] <- str_split(tidy_source(text = deparse(as.list(target$e[!mask])),
-            output = FALSE, width.cutoff = 20, args.newline = TRUE), "\\n")
+      chunks$codeRemoved[i] <- TRUE
+      # suppress spurious warning about change in element count
+      if (all(mask)) {
+        chunks$code[i] <- ""
+      } else
+      {
+      suppressWarnings(
+        chunks$code[i] <- str_split(tidy_source(
+            text = as.character(sapply(target[!mask], (\(u) u$e))),
+            output = FALSE, width.cutoff = 20, args.newline = TRUE)$text.tidy, "\\n"))
+      }
     }
     
     # execute operations
@@ -193,16 +192,26 @@ for (i in seq(nrow(chunks))) {
     # add post-chunk text
     pct_masks <- sapply(target, (\(u) u$xform$postBlockText))
     if (any(pct_masks)) {
-      chunks$codeRemoved[i] <- TRUE
       chunks$postChunkText[i] <- pt_ops[pct_masks]
     }
   }
+    
+  } # end if - is r chunk
+  
+  # generate the ouput starting here
 
-    # TODO remove empty chunks
-    
-    
-    
+  if (length(unlist(chunks$code[i])) > 0) {
+  # only generate the chunk if there is some code there
+    dst <- append(dst, c(src[chunks$start[i]], unlist(chunks$code[i]), 
+                         src[chunks$end[i]], unlist(chunks$postChunkText[i])))
   }
-}
+  print(i)
+  cat(dst, sep = "\n")
+  if (chunks$end[i] < length(src)) {
+    dst <- append(dst, src[(chunks$end[i] + 1):ifelse(i >= nrow(chunks), 
+                                    nrow(src), chunks$start[i + 1] - 1)])
+  }
+} # end for 
 
+write_lines(dst, target_location)
 
