@@ -39,11 +39,12 @@ xformTabEntry <- function(condition = function(e)
 }
 
 xformTab <- list(
-  # capture assigments to variable named "img_path"
+  # capture assigments to certain variables: {img_path, wd}
   getImgPath = xformTabEntry(
     condition = function(e) {
       mode(e[[1]]) == "name" && e[[1]] == "<-" &&
-        mode(e[[2]]) == "name" && e[[2]] == "img_path"
+        mode(e[[2]]) == "name" && 
+        as.character(e[[2]]) %in% c("img_path", "wd")
     },
     # evaluate and store the path
     operation = function(e) {
@@ -280,7 +281,6 @@ file.list <- list.files(
   recursive = TRUE
 )
 
-file.list <- "index.qmd"
 for (file_name in file.list) {
   timestamp(glue("start {file_name} at {Sys.time()}"))
   process_file(file.path(base_dir, file_name),
