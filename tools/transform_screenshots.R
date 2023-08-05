@@ -163,7 +163,7 @@ process_file <- function(source_location, target_location)
     mutate(
       header = str_split(str_split_i(
         str_split_i(substring(src[start], 4), fixed("}"), 1),
-        fixed("{"), -1
+        fixed("{"),-1
       ), "[,]\\s*"),
       lan =  sapply(header, (\(u) {
         result <- u[[1]][1]
@@ -176,6 +176,11 @@ process_file <- function(source_location, target_location)
       codeRemoved = FALSE
     )
   
+  if (nrow(chunks) < 1) {
+    # avoid dealing with corner cases when there are no chunks
+    dst <- src
+  } else
+  {
   chunks$code = mapply((\(s, e) src[s:e]), chunks$start + 1, chunks$end - 1)
   # TODO: do the loop twice and put this at the head of the second loop
   # emit the lines before the first chunk, if any
@@ -253,7 +258,9 @@ process_file <- function(source_location, target_location)
   dst <- rle(trim(dst))
   dst$lengths[dst$values == "" & dst$lengths > 1] <- 1
   dst <- inverse.rle(dst)
+  }
   
+  # write the transformed file
   dn <- dirname(target_location)
   if (!dir.exists(dn)) {
     dir.create(dn, recursive = TRUE)
@@ -266,14 +273,18 @@ base_dir <- "~/Projects/dsbook-part-1"
 target_dir <- base_dir
 target_dir <- "~/temp/run-08051412"
 
-file.list <- list.files(path = base_dir, pattern = "*.qmd", 
-                    full.names = FALSE,recursive = TRUE)
+file.list <- list.files(
+  path = base_dir,
+  pattern = "*.qmd",
+  full.names = FALSE,
+  recursive = TRUE
+)
 
+file.list <- "index.qmd"
 for (file_name in file.list) {
   timestamp(glue("start {file_name} at {Sys.time()}"))
   process_file(file.path(base_dir, file_name),
                file.path(target_dir, file_name))
-  
+  timestamp(glue("end {file_name} at {Sys.time()}"))
 }
 timestamp(glue("All done at {Sys.time()}"))
-
