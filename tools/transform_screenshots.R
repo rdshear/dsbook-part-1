@@ -8,13 +8,6 @@ library(formatR)
 # for debugging...clear all variables from the environment
 rm(list = ls())
 
-base_dir <- "~/Projects/dsbook-part-1/R/"
-target_dir <- base_dir
-# target_dir <- "~/temp/"
-file_name <- "getting-started.qmd"
-source_location <- file.path(base_dir, file_name)
-target_location <- file.path(target_dir, file_name)
-
 # Transform certain screenshot file locations
 # screenshots <- list.files(file.path(img_path, "windows-screenshots"))
 
@@ -28,23 +21,28 @@ target_location <- file.path(target_dir, file_name)
 # removeSource - if true, remove the source code
 # postBlockText - TRUE => place the value of operation(e) after the code chunk
 
-xformTabEntry <- function(condition = function(e) FALSE,
-  operation = function(e) "",
+parser_env <- new.env()
+
+xformTabEntry <- function(condition = function(e)
+  FALSE,
+  operation = function(e)
+    "",
   removeSource = FALSE,
-  postBlockText = FALSE
-)
+  postBlockText = FALSE)
 {
-  list(condition = condition, 
-       operation = operation, 
-       removeSource = removeSource, 
-       postBlockText = postBlockText)
+  list(
+    condition = condition,
+    operation = operation,
+    removeSource = removeSource,
+    postBlockText = postBlockText
+  )
 }
 
 xformTab <- list(
   # capture assigments to variable named "img_path"
   getImgPath = xformTabEntry(
     condition = function(e) {
-      mode(e[[1]]) == "name" && e[[1]] == "<-" && 
+      mode(e[[1]]) == "name" && e[[1]] == "<-" &&
         mode(e[[2]]) == "name" && e[[2]] == "img_path"
     },
     # evaluate and store the path
@@ -64,11 +62,11 @@ xformTab <- list(
   deleteScreenshotRefs = xformTabEntry(
     condition = function(e) {
       deparse(e[[1]]) == "knitr::opts_chunk$set" ||
-      (
-        mode(e[[1]]) == "name" && e[[1]] == "<-" && 
-        mode(e[[2]]) == "name" && 
-        as.character(e[[2]]) %in% c("screenshots", "mac_screenshots")
-      )
+        (
+          mode(e[[1]]) == "name" && e[[1]] == "<-" &&
+            mode(e[[2]]) == "name" &&
+            as.character(e[[2]]) %in% c("screenshots", "mac_screenshots")
+        )
     },
     removeSource = TRUE
   ),
@@ -77,8 +75,9 @@ xformTab <- list(
   deleteScreenshotRefs = xformTabEntry(
     condition = function(e) {
       # HACK rough heuristic
-      e[[1]] == "if" && 
-        e[[2]] == "knitr::is_html_output()" && length(e[[3]]) > 1 && 
+      e[[1]] == "if" &&
+        e[[2]] == "knitr::is_html_output()" &&
+        length(e[[3]]) > 1 &&
         startsWith(as.character(e[[3]][2]), "knitr::opts_chunk$set(")
     },
     removeSource = TRUE
@@ -95,12 +94,14 @@ xformTab <- list(
       if (e1[[1]] == '[' && is.symbol(e1[[2]])) {
         vname <- as.character(e1[[2]])
         if (endsWith(as.character(vname), "screenshots")) {
-        path2 <-  ifelse(startsWith(vname, "mac"), "mac", "win")
-        #eval(e1[[3]])
-
-        u <- vapply(eval(e1[[3]]), 
-             (\(idx)  glue("{path1}/{path2}/{path2}-img-{idx}.png")), "")
-        
+          path2 <-  ifelse(startsWith(vname, "mac"), "mac", "win")
+          #eval(e1[[3]])
+          
+          u <- vapply(eval(e1[[3]]),
+                      (\(idx)  glue(
+                        "{path1}/{path2}/{path2}-img-{idx}.png"
+                      )), "")
+          
         }
       } else {
         u <- eval(e[[2]], envir = as.list(parser_env))
@@ -136,111 +137,143 @@ walkCode <- function (e)
   return(list(xform = xformTab$default, e = e))
 }
 
-# For realized values from the parse tree available to downstream nodes
-parser_env <- new.env()
-
-src <- readLines(source_location)
-dst <- character()
-
-# ignore quadtick chunks
-quadticks <- cumsum(str_starts(src, '````')) %% 2 == 1
-quadticks <- !(quadticks | lag(quadticks, default = FALSE))
-if (!tail(quadticks, 1)) {
-  stop("Unbalanced quadticks (````)")
-}
-
-fences <-  which(str_starts(src, '```') & quadticks)
-if (length(fences) %% 2 != 0) {
-  stop("Unbalanced chunk fences")
-}
-chunks <- matrix(fences, ncol = 2, byrow = TRUE)
-colnames(chunks) <- c("start", "end")
-
-chunks <- as_tibble(chunks) |>
-  mutate(
-    header = str_split(str_split_i(
-      str_split_i(substring(src[start], 4), fixed("}"), 1),
-      fixed("{"),-1
-    ), "[,]\\s*"),
-    lan =  sapply(header, (\(u) {
-      result <- u[[1]][1]
-      if (result == "")
-        result = "r"
-      result
-    })),
-    params = sapply(header, (\(u) u[-1])),
-    postChunkText = list(character()),
-    codeRemoved = FALSE
-  )
-
-chunks$code = mapply((\(s, e) src[s:e]), chunks$start + 1, chunks$end - 1)
-# TODO: do the loop twice and put this at the head of the second loop
-# emit the lines before the first chunk, if any
-if (chunks$start[1] > 1) {
-  dst <- append(dst, src[1:(chunks$start[1] - 1)])
-}
-
-# TODO process chunk parameters
-
-for (i in seq(nrow(chunks))) {
-  if (chunks$lan[i] == "r") {
-    ptree <- tryCatch(
-    parse(text = chunks$code[i][[1]], keep.source = TRUE),
-    error = function(e) {
-      print(e)
-      return(NULL)
-    }
-  )
-  if (is.null(ptree)) {
-    cat(sprintf("Failure in lines %d-%d\n", chunks$start[i], chunks$end[i]))
-  }
-  else {
-    target <- lapply(ptree, (\(u) walkCode(u)))
-    # remove expressions if necessary
-    mask <- vapply(target, (\(u) u$xform$removeSource), TRUE)
-    if (any(mask)) {
-      chunks$codeRemoved[i] <- TRUE
-      # suppress spurious warning about change in element count
-      if (all(mask)) {
-        chunks$code[i] <- ""
-      } else
-      {
-        # supressWarnings due to nuisance warning of change in vector length
-        suppressWarnings(
-          chunks$code[i] <- str_split(tidy_source(
-              text = as.character(sapply(target[!mask], (\(u) u$e))),
-              output = FALSE, width.cutoff = 20, args.newline = TRUE)$text.tidy, "\\n"))
-      }
-    }
-    
-    # execute operations
-    pt_ops <- lapply(target, (\(u) u$xform$operation(u$e)))
-    # add post-chunk text
-    pct_masks <- sapply(target, (\(u) u$xform$postBlockText))
-    if (any(pct_masks)) {
-      chunks$postChunkText[i] <- pt_ops[pct_masks]
-    }
-  }
-    
-  } # end if - is r chunk
+process_file <- function(source_location, target_location)
+{
+  # For realized values from the parse tree available to downstream nodes
+  parser_env <- new.env()
   
-  # generate the ouput starting here
-  x <- unlist(chunks$code[i])
-  if (!identical(x, "")) {
-  # only generate the chunk if there is some code there
-    dst <- append(dst, c(src[chunks$start[i]], x, src[chunks$end[i]]))
+  src <- readLines(source_location)
+  dst <- character()
+  
+  # ignore quadtick chunks
+  quadticks <- cumsum(str_starts(src, '````')) %% 2 == 1
+  quadticks <- !(quadticks | lag(quadticks, default = FALSE))
+  if (!tail(quadticks, 1)) {
+    stop("Unbalanced quadticks (````)")
   }
-  dst <- append(dst, unlist(chunks$postChunkText[i]))
-  if (chunks$end[i] < length(src)) {
-    dst <- append(dst, src[(chunks$end[i] + 1):ifelse(i >= nrow(chunks), 
-                                    nrow(src), chunks$start[i + 1] - 1)])
+  
+  fences <-  which(str_starts(src, '```') & quadticks)
+  if (length(fences) %% 2 != 0) {
+    stop("Unbalanced chunk fences")
   }
-} # end for 
+  chunks <- matrix(fences, ncol = 2, byrow = TRUE)
+  colnames(chunks) <- c("start", "end")
+  
+  chunks <- as_tibble(chunks) |>
+    mutate(
+      header = str_split(str_split_i(
+        str_split_i(substring(src[start], 4), fixed("}"), 1),
+        fixed("{"), -1
+      ), "[,]\\s*"),
+      lan =  sapply(header, (\(u) {
+        result <- u[[1]][1]
+        if (result == "")
+          result = "r"
+        result
+      })),
+      params = sapply(header, (\(u) u[-1])),
+      postChunkText = list(character()),
+      codeRemoved = FALSE
+    )
+  
+  chunks$code = mapply((\(s, e) src[s:e]), chunks$start + 1, chunks$end - 1)
+  # TODO: do the loop twice and put this at the head of the second loop
+  # emit the lines before the first chunk, if any
+  if (chunks$start[1] > 1) {
+    dst <- append(dst, src[1:(chunks$start[1] - 1)])
+  }
+  
+  # TODO process chunk parameters
+  
+  for (i in seq(nrow(chunks))) {
+    if (chunks$lan[i] == "r") {
+      ptree <- tryCatch(
+        parse(text = chunks$code[i][[1]], keep.source = TRUE),
+        error = function(e) {
+          print(e)
+          return(NULL)
+        }
+      )
+      if (is.null(ptree)) {
+        cat(sprintf("Failure in lines %d-%d\n", chunks$start[i], chunks$end[i]))
+      }
+      else {
+        target <- lapply(ptree, (\(u) walkCode(u)))
+        # remove expressions if necessary
+        mask <- vapply(target, (\(u) u$xform$removeSource), TRUE)
+        if (any(mask)) {
+          chunks$codeRemoved[i] <- TRUE
+          # suppress spurious warning about change in element count
+          if (all(mask)) {
+            chunks$code[i] <- ""
+          } else
+          {
+            # supressWarnings due to nuisance warning of change in vector length
+            suppressWarnings(chunks$code[i] <- str_split(
+              tidy_source(
+                text = as.character(sapply(target[!mask], (\(
+                  u
+                ) u$e))),
+                output = FALSE,
+                width.cutoff = 20,
+                args.newline = TRUE
+              )$text.tidy,
+              "\\n"
+            ))
+          }
+        }
+        
+        # execute operations
+        pt_ops <- lapply(target, (\(u) u$xform$operation(u$e)))
+        # add post-chunk text
+        pct_masks <- sapply(target, (\(u) u$xform$postBlockText))
+        if (any(pct_masks)) {
+          chunks$postChunkText[i] <- pt_ops[pct_masks]
+        }
+      }
+      
+    } # end if - is r chunk
+    
+    # generate the ouput starting here
+    x <- unlist(chunks$code[i])
+    if (!identical(x, "")) {
+      # only generate the chunk if there is some code there
+      dst <-
+        append(dst, c(src[chunks$start[i]], x, src[chunks$end[i]]))
+    }
+    dst <- append(dst, unlist(chunks$postChunkText[i]))
+    if (chunks$end[i] < length(src)) {
+      dst <-
+        append(dst, src[(chunks$end[i] + 1):ifelse(i >= nrow(chunks),
+                                                   length(src), chunks$start[i + 1] - 1)])
+    }
+  } # end for
+  
+  # remove extra empty lines
+  dst <- rle(trim(dst))
+  dst$lengths[dst$values == "" & dst$lengths > 1] <- 1
+  dst <- inverse.rle(dst)
+  
+  dn <- dirname(target_location)
+  if (!dir.exists(dn)) {
+    dir.create(dn, recursive = TRUE)
+  }
+  write_lines(dst, target_location, append = FALSE)
+}
 
-# remove extra empty lines
-dst <- rle(trim(dst))
-dst$lengths[dst$values == "" & dst$lengths > 1] <- 1
-dst <- inverse.rle(dst)
 
-write_lines(dst, target_location)
+base_dir <- "~/Projects/dsbook-part-1"
+target_dir <- base_dir
+target_dir <- "~/temp/run-08051412"
+
+file.list <- list.files(path = base_dir, pattern = "*.qmd", 
+                    full.names = FALSE,recursive = TRUE)
+
+for (file_name in file.list) {
+  timestamp(glue("start {file_name} at {Sys.time()}"))
+  process_file(file.path(base_dir, file_name),
+               file.path(target_dir, file_name))
+  
+}
+timestamp(glue("All done at {Sys.time()}"))
 
