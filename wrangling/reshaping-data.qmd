@@ -88,13 +88,11 @@ select(new_wide_data, country, `1960`:`1967`)
 
 Similar to `pivot_wider`, `names_from` and `values_from` default to `name` and `value`.
 
-````{=html}
+
 <!--
 The following diagram can help remind you how these two functions work:
 
-```{r, echo=FALSE}
-knitr::include_graphics(file.path(img_path,"gather-spread.png"))
-```
+![](img/gather-spread.png)
 
 (Image courtesy of RStudio^[https://github.com/rstudio/cheatsheets]. CC-BY-4.0 license^[https://github.com/rstudio/cheatsheets/blob/master/LICENSE]. Cropped from original.)
 <!-- (Source: RStudio. The image is a section of this [cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf).)

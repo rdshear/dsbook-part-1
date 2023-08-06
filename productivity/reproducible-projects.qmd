@@ -149,16 +149,11 @@ We can also produce documents that render on GitHub using `format: gfm`, which s
 ![](img/win/win-img-110.png)
 --> This will produce a markdown file, with suffix `md`, that renders nicely on GitHub. Because we have uploaded these files to GitHub, you can click on the `md` file and you will see the report as a webpage:
 
-````{=html}
 <!--
 
-```{r, echo=FALSE}
-knitr::include_graphics(screenshots[124]) 
-```
+![](img/win/win-img-124.png)
 
 -->
-````
-
 ![](img/win/win-img-125.png)
 
 This is a convenient way to share your reports.

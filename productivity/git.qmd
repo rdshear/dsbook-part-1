@@ -144,19 +144,12 @@ git clone https://github.com/rairizarry/murders.git
 cd murders
 ```
 
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = "git-example/murders")
-```
-
 You now have cloned a GitHub repo and have a working Git directory, with all the files, on your system.
 
 ```{bash}
 ls
 ```
 
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = wd)
-```
 
 ![](img/git/git-clone.png)
 
@@ -165,10 +158,6 @@ The _Working Directory_ is the same as your Unix working directory. When you edi
 ![](img/git/git-status.png)
 
 If you check the status now, you will see that nothing has changed and you get the following message:
-
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = "git-example/murders")
-```
 
 ```{bash}
 git status
@@ -200,17 +189,9 @@ Notice what the status says now:
 git status
 ```
 
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = wd)
-```
-
-![](/Users/rshear/Projects/dsbook-part-1/img/git/git-add.png)
+![](img/git/git-add.png)
 
 Because `new-file.txt` is staged, the current version of the file will get added to the local repository next time we commit, which we do as follows:
-
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = "git-example/murders")
-```
 
 ```{bash}
 git commit -m "adding a new file" 
@@ -222,21 +203,9 @@ We have now changed the local repo, which you can confirm using
 git status
 ```
 
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = wd)
-```
-
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = wd)
-```
-
-![](/Users/rshear/Projects/dsbook-part-1/img//git/git-commit.png)
+![](img/git/git-commit.png)
 
 However, if we edit that file again, it changes only in the working directory. To add to the local repo, we need to stage it and commit the changes that are added to the local repo:
-
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = "git-example/murders")
-```
 
 ```{bash}
 echo "adding a line" >> new-file.txt
@@ -261,10 +230,6 @@ To keep everything synced, the final step is to push the changes to the upstream
 
 ```{bash, eval=FALSE}
 git push
-```
-
-```{r, include=FALSE}
-knitr::opts_knit$set(root.dir = wd)
 ```
 
 ![](img/git/git-push.png)

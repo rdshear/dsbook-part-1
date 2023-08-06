@@ -27,7 +27,7 @@ Yet another way to access the terminal is from RStudio. In the _Console_ pane yo
 
 3. You might have Git installed already. One way to check is by asking for the version by typing:
 
-```{bash, eval=FALSE, echo=TRUE}
+```
 git --version
 ```
     
