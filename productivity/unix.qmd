@@ -1,6 +1,5 @@
 # Organizing with Unix {#sec-unix}
 
-
 Unix is the operating system of choice in data science. We will introduce you to the Unix way of thinking using an example: how to keep a data analysis project organized. We will learn some of the most commonly used commands along the way. However, we won't go into the details here. We highly encourage you to learn more, especially when you find yourself using the mouse too much or performing a repetitive task often. In those cases, there is probably a more efficient way to do it in Unix. Here are some basic courses to get you started:
 
 * [https://www.codecademy.com/learn/learn-the-command-line](https://www.codecademy.com/learn/learn-the-command-line)
@@ -10,7 +9,6 @@ Unix is the operating system of choice in data science. We will introduce you to
 There are many reference books^[https://www.quora.com/Which-are-the-best-Unix-Linux-reference-books] as well. Bite Size Linux^[https://gumroad.com/l/bite-size-linux] and Bite Size Command Line^[https://jvns.ca/blog/2018/08/05/new-zine--bite-size-command-line/] are two particularly clear, succinct, and complete examples.
 
 When searching for Unix resources, keep in mind that other terms used to describe what we will learn here are _Linux_, _the shell_ and _the command line_. Basically, what we are learning is a series of commands and a way of thinking that facilitates the organization of files without using the mouse. 
-
 
 To serve as motivation, we are going to start constructing a directory using Unix tools and RStudio. 
 
@@ -29,7 +27,6 @@ their contents and specifies how they relate to other files. The Smithsonian Dat
 
 For specific recommendations we highly recommend you follow The Tidyverse Style Guide^[https://style.tidyverse.org/].
 
-
  
 ## The terminal {#sec-the-terminal}
 
@@ -38,7 +35,6 @@ Instead of clicking, dragging, and dropping to organize our files and folders, w
 You will need access to a terminal^[https://rafalab.github.io/dsbook/accessing-the-terminal-and-installing-git.html]
 <!--We have already described how we can access a terminal on a Mac (Section @sec-terminal-on-mac)) and Windows (Section \@ref(terminal-on-windows).-->
 Once you have a terminal open, you can start typing commands. You should see a blinking cursor at the spot where what you type will show up. This position is called the _command line_. Once you type something and hit enter on Windows or return on the Mac, Unix will try to execute this command. If you want to try out an example, type this command into your command line:
-
 
 ```{bash, eval=FALSE}
 echo "hello world"
@@ -49,7 +45,6 @@ The command `echo` is similar to `cat` in R. Executing this line should print ou
 Notice that you can't use the mouse to move around in the terminal. You have to use the keyboard. To go back to a command you previously typed, you can use the up arrow.
 
 Note that above we included a chunk of code showing Unix commands in the same way we have previously shown R commands. We will make sure to distinguish when the command is meant for R and when it is meant for Unix.
-
 
 ## The filesystem {#sec-filesystem}
 
@@ -62,7 +57,6 @@ The first concept you need to grasp to become a Unix user is how your filesystem
 Here is a visual representation of the structure we are describing:
 
 ![](img/unix/filesystem.png)
-
 
 In Unix, we refer to folders as _directories_. Directories that are inside other directories are often referred to as _subdirectories_. So, for example, in the figure above, the directory _docs_ has two subdirectories: _reports_ and _resumes_, and _docs_ is a subdirectory of _home_.
 
@@ -166,8 +160,6 @@ ls
 
 If you made a mistake and need to remove the directory, you can use the command `rmdir` to remove it. 
 
-
-
 ```{bash, eval=FALSE}
 mkdir junk
 rmdir junk
@@ -241,13 +233,11 @@ cd /c/Users/yourusername/projects
 
 The last two commands are equivalent and in both cases we are typing the full path.
 
-
 When typing out the path of the directory we want, either full or relative, we can concatenate directories with the forward-slashes. We already saw that we can move to the `projects` directory regardless of where we are by typing the full path like this:  
 
 ```{bash, eval=FALSE}
 cd ~/projects
 ```
-
 
 We can also concatenate directory names for relative paths. For instance, if we want to move back to the parent directory of the parent directory of the working directory, we can type:
 
@@ -271,13 +261,11 @@ cd
 
 you will be returned to your home directory.
 
-
 ## Some examples
 
 Let's explore some examples of using `cd`. To help visualize, we will show the graphical representation of our filesystem vertically:
 
 ![](img/unix/filesystem-vertical.png){width=40%}
-
 
 Suppose our working directory is `~/projects` and we want to move to `figs` in `project-1`.
 
@@ -362,14 +350,12 @@ mv cv.tex resume.tex
 
 We can also combine the move and a rename. For example:
 
-
 ```{bash, eval=FALSE}
 cd ~/docs/resumes
 mv cv.tex ../reports/resume.tex
 ```
 
 And we can move entire directories. To move the `resumes` directory into `reports`, we do as follows:
-
 
 ```{bash, eval=FALSE}
 mv ~/docs/resumes ~/docs/reports/
@@ -454,7 +440,6 @@ cd projects/murders
 ```
 
 In Section @sec-organizing we will describe how we can use RStudio to organize a data analysis project, once these directories have been created.
-
 
 ## Advanced Unix
 
@@ -572,7 +557,6 @@ This will only remove files with that format.
 
 We can combine wild cards. For example, to remove all files with the name `file-001` regardless of suffix, we can type:
 
-
 ```{bash, eval=FALSE}
 rm file-001.* 
 ```
@@ -614,7 +598,6 @@ export PATH = /usr/bin/
 ```
 
 There is a program that is run before each terminal starts where you can edit variables so they change whenever you call the terminal. This changes in different implementations, but if using bash, you can create a file called  `.bashrc`, `.bash_profile`,`.bash_login`, or `.profile`. You might already have one. 
-
 
 ### Executables
 
@@ -678,19 +661,10 @@ There are many commands that we do not teach in this book, but we want to make y
 
 - awk/sed - These are two very powerful commands that permit you to find specific strings in files and change them.
 
-
 ### File manipulation in R
 
 We can also perform file management from within R. The key functions to learn about can be seen by looking at the help file for 
 `?files`. Another useful function is `unlink`.
 
 Although not generally recommended, note that you can run Unix commands in R using `system`.
-
-
-
-```{r, include=FALSE}
-knitr::opts_chunk$set(out.width = NULL, out.extra = NULL)
-```
-
-
 

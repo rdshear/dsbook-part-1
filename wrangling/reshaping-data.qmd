@@ -1,9 +1,5 @@
 # Reshaping data
 
-```{r, echo=FALSE}
-img_path <- "img/"
-```
-
 As we have seen through the book, having data in *tidy* format is what makes the tidyverse flow. After the first step in the data analysis process, importing data, a common next step is to reshape the data into a form that facilitates the rest of the analysis. The **tidyr** package includes several functions that are useful for tidying data.
 
 We will use the fertility wide format dataset described in Section @sec-tidy-data as an example in this section.

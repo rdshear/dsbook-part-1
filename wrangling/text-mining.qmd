@@ -2,7 +2,6 @@
 
 With the exception of labels used to represent categorical data, we have focused on numerical data. But in many applications, data starts as text. Well-known examples are spam filtering, cyber-crime prevention, counter-terrorism and sentiment analysis. In all these cases, the raw data is composed of free form text. Our task is to extract insights from these data. In this section, we learn how to generate useful numerical summaries from text data to which we can apply some of the powerful data visualization and analysis techniques we have learned.  
 
-
 ## Case study: Trump tweets
 
 During the 2016 US presidential election, then candidate Donald J. Trump used his twitter account as a way to communicate with potential voters. On August 6, 2016, Todd Vaziri tweeted^[https://twitter.com/tvaziri/status/762005541388378112/photo/1] about Trump that "Every non-hyperbolic tweet is from iPhone (his staff). Every hyperbolic tweet is from Android (from him)." 
@@ -90,11 +89,9 @@ campaign_tweets |>
   labs(x = "Hour of day (EST)", y = "% of tweets", color = "")
 ```
 
-
 We notice a big peak for the Android in the early hours of the morning, between 6 and 8 AM. There seems to be a clear difference in these patterns. We will therefore assume that two different entities are using these two devices. 
 
 We will now study how the tweets differ when we compare Android to iPhone. To do this, we introduce the __tidytext__ package.
-
 
 ## Text as data
 
@@ -143,7 +140,6 @@ tweet_words <- campaign_tweets |>
   unnest_tokens(word, text)
 ```
 
-
 And we can now answer questions such as "what are the most commonly used words?":
 
 ```{r}
@@ -178,7 +174,6 @@ tweet_words |>
 ```
 
 Some exploration of the resulting words (not shown here) reveals a couple of unwanted characteristics in our tokens. First, some of our tokens are just numbers (years, for example). We want to remove these and we can find them using the regex `^\d+$`. Second, some of our tokens come from a quote and they start with `'`. We want to remove the `'` when it is at the start of a word so we will just `str_replace`. We add these two lines to the code above to generate our final table:
-
 
 ```{r, message=FALSE, warning=FALSE}
 tweet_words <- campaign_tweets |> 
@@ -266,7 +261,6 @@ nrc <- get_sentiments("nrc") |>
 
 We can combine the words and sentiments using `inner_join`, which will only keep words associated with a sentiment. Here are 10 random words extracted from the tweets:
 
-
 ```{r}
 tweet_words |> inner_join(nrc, by = "word", relationship = "many-to-many") |> 
   select(source, word, sentiment) |> 
@@ -274,7 +268,6 @@ tweet_words |> inner_join(nrc, by = "word", relationship = "many-to-many") |>
 ```
 
 Now we are ready to perform a quantitative analysis comparing Android and iPhone by comparing the sentiments of the tweets posted from each device. Here we could perform a tweet-by-tweet analysis, assigning a sentiment to each tweet. However, this will be challenging since each tweet will have several sentiments attached to it, one for each word appearing in the lexicon. For illustrative purposes, we will perform a much simpler analysis: we will count and compare the frequencies of each sentiment appearing in each device.
-
 
 ```{r}
 sentiment_counts <- tweet_words |>
@@ -347,13 +340,10 @@ android_iphone_or |> inner_join(nrc, by = "word") |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
 ```
 
-
 This is just a simple example of the many analyses one can perform with tidytext.
 To learn more, we again recommend the Tidy Text Mining book^[https://www.tidytextmining.com/].
 
-
 ## Exercises
-
 
 Project Gutenberg is a digital archive of public domain books. The R package __gutenbergr__ facilitates the importation of these texts into R.
 
@@ -384,7 +374,6 @@ gutenberg_metadata
 
    
 5\. We will later make a plot of sentiment versus location in the book. For this, it will be useful to add a column with the word number to the table. 
-
 
 6\. Remove the stop words and numbers from the `words` object. Hint: use the `anti_join`. 
 
