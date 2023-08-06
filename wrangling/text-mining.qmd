@@ -249,7 +249,7 @@ get_sentiments("loughran") |> count(sentiment)
 ```
 
 ```{r}
-get_sentiments("nrc") |> count(sentiment)
+ get_sentiments("nrc") |> count(sentiment)
 ```
 
 For our analysis, we are interested in exploring the different sentiments of each tweet so we will use the `nrc` lexicon:

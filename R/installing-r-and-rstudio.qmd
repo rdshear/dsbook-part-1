@@ -10,25 +10,25 @@ RStudio is an interactive desktop environment, but it is not R, nor does it incl
 
 [^installing-r-and-rstudio-1]: https://cran.r-project.org/
 
-![](img/win/win-img-1.png)
+![](../productivity/img/win/win-img-1.png)
 
 2.  Once on the CRAN page, select the version for your operating system: Linux, Mac OS X, or Windows.
 
-![](img/win/win-img-2.png)
+![](../productivity/img/win/win-img-2.png)
 
 Here we show screenshots for Windows, but the process is similar for the other platforms. When they differ, we will also show screenshots for Mac OS X.
 
 3.  Once at the CRAN download page, you will have several choices. You want to install the *base* subdirectory. This installs the basic packages you need to get started. We will later learn how to install other needed packages from within R, rather than from this webpage.
 
-![](img/win/win-img-3.png)
+![](../productivity/img/win/win-img-3.png)
 
 4.  Click on the link for the latest version to start the download.
 
-![](img/win/win-img-4.png)
+![](../productivity/img/win/win-img-4.png)
 
 5.  If you are using Chrome, at the bottom of your browser you should see a tab that shows you the progress of the download. Once the installer file downloads, you can click on that tab to start the installation process. Other browsers may be different, so you will have to find where they store downloaded files and click on them to get the process started.
 
-![](img/win/win-img-5.png)
+![](../productivity/img/win/win-img-5.png)
 
 If using Safari on a Mac, you can access the download through the download button.
 
@@ -36,26 +36,26 @@ If using Safari on a Mac, you can access the download through the download butto
 
 6.  You can now click through different choices to finish the installation. We recommend you select all the default choices.
 
-![](img/win/win-img-6.png)
+![](../productivity/img/win/win-img-6.png)
 
 Select the default even when you get an ominous warning.
 
-![](img/win/win-img-7.png)
+![](../productivity/img/win/win-img-7.png)
 
 When selecting the language, consider that it will be easier to follow this book if you select English.
 
-![](img/win/win-img-8.png)
+![](../productivity/img/win/win-img-8.png)
 
 Continue to select all the defaults:
 
-![](img/win/win-img-9.png)
-![](img/win/win-img-10.png)
-![](img/win/win-img-11.png)
-![](img/win/win-img-12.png)
+![](../productivity/img/win/win-img-9.png)
+![](../productivity/img/win/win-img-10.png)
+![](../productivity/img/win/win-img-11.png)
+![](../productivity/img/win/win-img-12.png)
 
-![](img/win/win-img-13.png)
-![](img/win/win-img-14.png)
-![](img/win/win-img-15.png)
+![](../productivity/img/win/win-img-13.png)
+![](../productivity/img/win/win-img-14.png)
+![](../productivity/img/win/win-img-15.png)
 
 On the Mac it looks different, but you are also accepting the defaults:
 
@@ -76,46 +76,46 @@ Congratulations! You have installed R.
 
 1.  You can start by searching for RStudio on your browser:
 
-![](img/win/win-img-18.png)
+![](../productivity/img/win/win-img-18.png)
 
 2.  You should find the RStudio website as shown above. Once there, click on *Download RStudio*.
 
-![](img/win/win-img-19.png)
+![](../productivity/img/win/win-img-19.png)
 
 3.  This will give you several options. For what we do in this book, it is more than enough to use the free Desktop version:
 
-![](img/win/win-img-20.png)
+![](../productivity/img/win/win-img-20.png)
 
 4.  Once you select this option, it will take you to a page in which the operating system options are provided. Click the link showing your operating system.
 
-![](img/win/win-img-21.png)
+![](../productivity/img/win/win-img-21.png)
 
 5.  Once the installation file is downloaded, click on the downloaded file to start the installation process:
 
-![](img/win/win-img-22.png)
+![](../productivity/img/win/win-img-22.png)
 
 6.  We recommend clicking yes on all the defaults.
 
-![](img/win/win-img-23.png)
-![](img/win/win-img-24.png)
-![](img/win/win-img-25.png)
+![](../productivity/img/win/win-img-23.png)
+![](../productivity/img/win/win-img-24.png)
+![](../productivity/img/win/win-img-25.png)
 
-![](img/win/win-img-26.png)
-![](img/win/win-img-27.png)
-![](img/win/win-img-28.png)
+![](../productivity/img/win/win-img-26.png)
+![](../productivity/img/win/win-img-27.png)
+![](../productivity/img/win/win-img-28.png)
 
 On the Mac, there are fewer clicks. You basically drag and drop the RStudio icon into the Applications folder icon here:
 
-![](img/mac/mac-img-30.png)
+![](../productivity/img/mac/mac-img-30.png)
 
 Congratulations! You have installed RStudio. You can now get started as you do on any other program in your computer. On Windows, you can open RStudio from the *Start* menu. If RStudio does not appear, you can search for it:
 
-![](img/win/win-img-29.png)
+![](../productivity/img/win/win-img-29.png)
 
 On the Mac, it will be in the Applications folder:
 
-![](img/mac/mac-img-31.png)
-![](img/mac/mac-img-32.png)
+![](../productivity/img/mac/mac-img-31.png)
+![](../productivity/img/mac/mac-img-32.png)
 
 **Pro tip for the Mac**: To avoid using the mouse to open RStudio, hit command+spacebar to open *Spotlight Search* and type RStudio into that search bar, then hit enter.
 
