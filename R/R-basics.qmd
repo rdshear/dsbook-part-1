@@ -1,9 +1,5 @@
 # R basics {#sec-r-basics}
 
-```{r, echo=FALSE}
-img_path <- "img"
-```
-
 In this book, we will be using the R software environment for all our analysis. You will learn R and data analysis techniques simultaneously. To follow along you will therefore need access to R. We also recommend the use of an *integrated development environment* (IDE), such as RStudio, to save your work. Note that it is common for a course or workshop to offer access to an R environment and an IDE through your web browser, as done by RStudio cloud[^r-basics-1]. If you have access to such a resource, you don't need to install R and RStudio. However, if you intend on becoming an advanced data analyst, we highly recommend installing these tools on your computer[^r-basics-2]. Both R and RStudio are free and available online.
 
 [^r-basics-1]: https://rstudio.cloud
@@ -30,7 +26,6 @@ dat <- tibble(country = toupper(c("US", "Italy", "Canada", "UK", "Japan", "Germa
               label = c(as.character(c(3.2, 0.71, 0.5, 0.1, 0, 0.2, 0.1)), "No Data"),
              code = c("us", "it", "ca", "gb", "jp", "de", "fr", "ru"))
 
-
 dat |> 
   mutate(country = reorder(country, -count)) |>
   ggplot(aes(country, count, label = label)) +
@@ -49,9 +44,10 @@ dat |>
         plot.margin = unit(c(1,1,1,1), "cm")) 
 ```
 
+```{=html}
 <!--(Source:
 [Ma’ayan Rosenzweigh/ABC News](https://abcnews.go.com/blogs/headlines/2012/12/us-gun-ownership-homicide-rate-higher-than-other-developed-countries/), Data from UNODC Homicide Statistics) -->
-
+```
 Or even worse, this version from [everytown.org](https://everytownresearch.org):
 
 ```{r murder-rate-example-2, echo=FALSE, out.width="70%"}
@@ -150,9 +146,7 @@ ls()
 
 In RStudio, the *Environment* tab shows the values:
 
-```{r, echo=FALSE}
-knitr::include_graphics(file.path(img_path,"rstudio-environment.png"))
-```
+![](img/rstudio-environment.png)
 
 We should see `a`, `b`, and `c`. If you try to recover the value of a variable that is not in your workspace, you receive an error. For example, if you type `x` you will receive the following message: `Error: object 'x' not found`.
 
@@ -257,6 +251,9 @@ or
 ### Other prebuilt objects
 
 There are several datasets that are included for users to practice and test out functions. You can see all the available datasets by typing:
+
+```{r}
+```
 
 ```{r}
 ```

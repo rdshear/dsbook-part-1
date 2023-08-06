@@ -1,9 +1,5 @@
 # ggplot2 {#sec-ggplot2}
 
-```{r, echo=FALSE}
-img_path <- "../R/img"
-```
-
 Exploratory data visualization is perhaps the greatest strength of R. One can quickly go from idea to data to plot with a unique balance of flexibility and ease. For example, Excel may be easier than R for some plots, but it is nowhere near as flexible. D3.js may be more flexible and powerful than R, but it takes much longer to generate a plot.
 
 Throughout the book, we will be creating plots using the **ggplot2**[^ggplot2-1] package.
@@ -121,12 +117,8 @@ Usually, the first added layer defines the geometry. We want to make a scatterpl
 
 Taking a quick look at the cheat sheet, we see that the function used to create plots with this geometry is `geom_point`.
 
-```{r, echo=FALSE, out.width="45%"}
-##https://ugoproto.github.io/ugo_r_doc/img/visualization_cs/ggplot2-cheatsheeta.png
-##https://ugoproto.github.io/ugo_r_doc/img/visualization_cs/ggplot2-cheatsheetb.png
-knitr::include_graphics(c(file.path(img_path,"ggplot2-cheatsheeta.png"),
-                          file.path(img_path,"ggplot2-cheatsheetb.png")))
-```
+![](../R/img/ggplot2-cheatsheeta.png)
+![](../R/img/ggplot2-cheatsheetb.png)
 
 (Image courtesy of RStudio[^ggplot2-3]. CC-BY-4.0 license[^ggplot2-4].)
 
@@ -411,7 +403,6 @@ murders |> ggplot(aes(population/10^6, total, label = abb)) +
 ```{r, echo=FALSE}
 ds_theme_set()
 ```
-
 
 ## Grids of plots
 

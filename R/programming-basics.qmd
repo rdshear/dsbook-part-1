@@ -1,6 +1,5 @@
 # Programming basics
 
-
 We teach R because it greatly facilitates data analysis, the main topic of this book. By coding in R, we can efficiently perform exploratory data analysis, build data analysis pipelines, and prepare data visualization to communicate results. However, R is not just a data analysis environment but a programming language. Advanced R programmers can develop complex packages and even improve R itself, but we do not cover advanced programming in this book. Nonetheless, in this section, we introduce three key programming concepts: conditional expressions, for-loops, and functions. These are not just key building blocks for advanced programming, but are sometimes useful during data analysis. We also note that there are several functions that are widely used to program in R but that we will not cover in this book. These include `split`, `cut`, `do.call`, and `Reduce`, as well as the __data.table__ package. These are worth learning if you plan to become an expert R programmer.
 
 ## Conditional expressions {#sec-conditionals}
@@ -19,14 +18,12 @@ if(a!=0){
 }
 ```
 
-
 Let's look at one more example using the US murders data frame:
 
 ```{r}
 library(dslabs)
 murder_rate <- murders$total / murders$population*100000
 ```
-
 
 Here is a very simple example that tells us which states, if any, have a murder rate lower than 0.5 per 100,000. The `if` statement protects us from the case in which no state satisfies the condition.
 
@@ -49,7 +46,6 @@ if(murder_rate[ind] < 0.25){
   print("No state has a murder rate that low.")
 }
 ```
-
 
 A related function that is very useful is `ifelse`. This function takes three arguments: a logical and two possible answers. If the logical is `TRUE`, the value in the second argument is returned and if `FALSE`, the value in the third argument is returned. Here is an example:
 
@@ -120,7 +116,6 @@ s
 ```
 
 Note how `s` is still `r s` after we call `avg`.
-
 
 In general, functions are objects, so we assign them to variable names with `<-`. The function `function` tells R you are about to define a function. The general form of a function definition looks like this:
 
@@ -226,7 +221,6 @@ n <- 1:m
 plot(n, s_n)
 ```
 
-
 If you noticed that it appears to be a quadratic, you are on the right track because the formula is $n(n+1)/2$.
 <!--
 which we can confirm with a table:
@@ -294,7 +288,6 @@ if(all(x>0)){
 }
 ```
 
-
 2\. Which of the following expressions is always `FALSE` when at least one entry of a logical vector `x` is TRUE?
 
 a. `all(x)`
@@ -330,19 +323,4 @@ my_func <- function(y){
 11\. Plot $S_n$ versus $n$. Use points defined by $n=1,\dots,25$.
 
 12\. Confirm that the formula for this sum is $S_n= n(n+1)(2n+1)/6$.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

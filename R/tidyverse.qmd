@@ -33,7 +33,6 @@ head(tidy_data, 6)
 
 This tidy dataset provides fertility rates for two countries across the years. This is a tidy dataset because each row presents one observation with the three variables being country, year, and fertility rate. However, this dataset originally came in another format and was reshaped for the __dslabs__ package. Originally, the data was in the following format:
 
-
 ```{r, echo=FALSE, message=FALSE}
 path <- system.file("extdata", package="dslabs")
 filename <- file.path(path, "fertility-two-countries-example.csv")
@@ -47,14 +46,12 @@ Although not immediately obvious, as you go through the book you will start to a
 
 ## Exercises 
 
-
 1\. Examine the built-in dataset `co2`. Which of the following is true:
 
 a. `co2` is tidy data: it has one year for each row.
 b. `co2` is not tidy: we need at least one column with a character vector.
 c. `co2` is not tidy:  it is a matrix instead of a data frame.
 d. `co2` is not tidy: to be tidy we would have to wrangle it to have three columns (year, month and value), then each co2 observation would have a row.
-
 
 2\. Examine the built-in dataset  `ChickWeight`. Which of the following is true:
 
@@ -63,14 +60,12 @@ b.  `ChickWeight` is tidy: each observation (a weight) is represented by one row
 c.  `ChickWeight` is not tidy: we are missing the year column.
 d.  `ChickWeight` is tidy: it is stored in a data frame.
 
-
 3\. Examine the built-in dataset `BOD`. Which of the following is true:
 
 a. `BOD` is not tidy: it only has six rows.
 b. `BOD` is not tidy: the first column is just an index.
 c. `BOD` is tidy: each row is an observation with two values (time and demand)
 d. `BOD` is tidy: all small datasets are tidy by definition.
-
 
 4\. Which of the following built-in datasets is tidy (you can pick more than one):
 
@@ -80,7 +75,6 @@ d. `DNase`
 d. `Formaldehyde`
 e. `Orange`
 f. `UCBAdmissions`
-
 
 ## Manipulating data frames
 
@@ -105,7 +99,6 @@ We can see that the new column is added:
 head(murders)
 ```
 
-
 ### Subsetting with `filter`
 
 Now suppose that we want to filter the data table to only show the entries for which the murder rate is lower than 0.71. To do this we use the `filter` function, which takes the data table as the first argument and then the conditional statement as the second. Like `mutate`, we can use the unquoted variable names from `murders` inside the function and it will know we mean the columns and not objects in the workspace.
@@ -113,7 +106,6 @@ Now suppose that we want to filter the data table to only show the entries for w
 ```{r}
 filter(murders, rate <= 0.71)
 ```
-
 
 ### Selecting columns with `select`
 
@@ -137,7 +129,6 @@ library(dslabs)
 
 You can add columns using the __dplyr__ function `mutate`. This function is aware of the column names and inside the function you can call them unquoted:
 
-
 ```{r, eval=FALSE}
 murders <- mutate(murders, population_in_millions = population / 10^6)
 ```
@@ -148,8 +139,6 @@ Use the function `mutate` to add a murders column named `rate` with the per 100,
 
 2\. If `rank(x)` gives you the ranks of `x` from lowest to highest, `rank(-x)` gives you the ranks from highest to lowest. Use the function `mutate` to add a column `rank` containing the rank, from highest to lowest murder rate. Make sure you redefine `murders` so we can keep using this variable.
 
-
-
 3\. With __dplyr__, we can use `select` to show only certain columns. For example, with this code we would only show the states and population sizes:
 
 ```{r, eval=FALSE}
@@ -157,7 +146,6 @@ select(murders, state, population) |> head()
 ```
 
 Use `select` to show the state names and abbreviations in `murders`. Do not redefine `murders`, just show the results.
-
 
 4\. The __dplyr__ function `filter` is used to choose specific rows of the data frame to keep. Unlike `select` which is for columns, `filter` is for rows. For example, you can show just the New York row like this:
 
@@ -178,7 +166,6 @@ no_florida <- filter(murders, state != "Florida")
 
 Create a new data frame called `no_south` that removes states from the South region. How many states are in this category? You can use the function `nrow` for this.
 
-
 6\. We can also use `%in%` to filter with __dplyr__. You can therefore see the data from New York and Texas like this:
 
 ```{r, eval=FALSE}
@@ -186,7 +173,6 @@ filter(murders, state %in% c("New York", "Texas"))
 ```
 
 Create a new data frame called `murders_nw` with only the states from the Northeast and the West.  How many states are in this category? 
-
 
 7\. Suppose you want to live in the Northeast or West **and** want the murder rate to be less than 1. We want to see the data for the states satisfying these options. Note that you can use logical operators with `filter`. Here is an example in which we filter to keep only small states in the Northeast region.
 
@@ -205,7 +191,6 @@ We wrote code above to show three variables (state, region, rate) for states tha
 $$ \mbox{original data }
 \rightarrow \mbox{ select }
 \rightarrow \mbox{ filter } $$
-
 
 For such an operation, we can use the pipe `|>`. The code looks like this:
 
@@ -338,7 +323,6 @@ us_murder_rate
 
 This computation counts larger states proportionally to their size which results in a larger value.
 
-
 ### Multiple summaries
 
 Suppose we want three summaries from the same variable such as the median, minimum, and maximum heights. We can use `summarize` like this:
@@ -380,13 +364,11 @@ The `summarize` function applies the summarization to each group separately.
 
 For another example, let's compute the median, minimum, and maximum murder rate in the four regions of the country using the `median_min_max` defined above:
 
-
 ```{r}
 murders |> 
   group_by(region) |>
   summarize(median_min_max(rate))
 ```
-
 
 ## `pull`
 
@@ -457,7 +439,6 @@ murders |>
   head()
 ```
 
-
 ### The top $n$ 
 
 In the code above, we have used the function `head` to avoid having the page fill up with the entire dataset. If we want to see a larger proportion, we can use the `top_n` function. This function takes a data frame as it's first argument, the number of rows to show in the second, and the variable to filter by in the third. Here is an example of how to see the top 5 rows:
@@ -468,7 +449,6 @@ murders |> top_n(5, rate)
 
 Note that rows are not sorted by `rate`, only filtered. If we want to sort, we need to use `arrange`.
 Note that if the third argument is left blank, `top_n` filters by the last column.
-
 
 ## Exercises 
 
@@ -499,12 +479,9 @@ Let's now explore the NHANES data.
 
 Hint: Use `filter` and `summarize` and use the `na.rm = TRUE` argument when computing the average and standard deviation. You can also filter the NA values using `filter`.
 
-
 2\. Using a pipe, assign the average to a numeric variable `ref_avg`. Hint: Use the code similar to above and then `pull`.
 
-
 3\. Now report the min and max values for the same group.
-
 
 4\. Compute the average and standard deviation for females, but for each age group separately rather than a selected decade as in question 1. Note that the age groups are defined by `AgeDecade`. Hint: rather than filtering by age and gender, filter by `Gender` and then use `group_by`.
 
@@ -513,8 +490,6 @@ Hint: Use `filter` and `summarize` and use the `na.rm = TRUE` argument when comp
 6\. We can actually combine both summaries for exercises 4 and 5 into one line of code. This is because `group_by` permits us to group by more than one variable. Obtain one big summary table using `group_by(AgeDecade, Gender)`.
 
 7\. For males between the ages of 40-49, compare systolic blood pressure across race as reported in the `Race1` variable. Order the resulting table from lowest to highest average systolic blood pressure.
-
-
 
 ## Tibbles
 
@@ -533,7 +508,6 @@ murders |> group_by(region) |> class()
 The `tbl`, pronounced tibble, is a special kind of data frame. The functions `group_by` and `summarize` always return this type of data frame. The `group_by` function returns a special kind of `tbl`, the `grouped_df`. We will say more about these later. For consistency, the __dplyr__ manipulation verbs (`select`, `filter`, `mutate`, and `arrange`) preserve the class of the input: if they receive a regular data frame they return a regular data frame, while if they receive a tibble they return a tibble. But tibbles are the preferred format in the tidyverse and as a result tidyverse functions that produce a data frame from scratch return a tibble. For example, in Chapter @sec-importing-data we will see that tidyverse functions used to import data create tibbles.
 
 Tibbles are very similar to data frames. In fact, you can think of them as a modern version of data frames. Nonetheless there are three important differences which we describe next.
-
 
 ### Tibbles display better 
 
@@ -573,7 +547,6 @@ returns a `NULL` with no warning, which can make it harder to debug. In contrast
 as_tibble(murders)$Population
 ```
 
-
 ### Tibbles can have complex entries
 
 While data frame columns need to be vectors of numbers, strings, or logical values, tibbles can have more complex objects, such as lists or functions. Also, we can create tibbles with functions:
@@ -581,7 +554,6 @@ While data frame columns need to be vectors of numbers, strings, or logical valu
 ```{r}
 tibble(id = c(1, 2, 3), func = c(mean, median, sd))
 ```
-
 
 ### Tibbles can be grouped
 
@@ -599,21 +571,17 @@ grades <- tibble(names = c("John", "Juan", "Jean", "Yao"),
 
 Note that base R (without packages loaded) has a function with a very similar name, `data.frame`, that can be used to create a regular data frame rather than a tibble.  
 
-
 ```{r}
 grades <- data.frame(names = c("John", "Juan", "Jean", "Yao"), 
                      exam_1 = c(95, 80, 90, 85), 
                      exam_2 = c(90, 85, 85, 90))
 ```
 
-
 To convert a regular data frame to a tibble, you can use the  `as_tibble` function. 
 
 ```{r}
 as_tibble(grades) |> class()
 ```
-
-
 
 ## The placeholder
 
@@ -625,11 +593,9 @@ log(8, base = 2)
 2 %>% log(8, base = .)
 ```
 
-
 ## The __purrr__ package
 
 In Section @sec-vectorization we learned about the `sapply` function, which permitted us to apply the same function to each element of a vector. We constructed a function and used `sapply` to compute the sum of the first `n` integers for several values of `n` like this:
-
 
 ```{r}
 compute_s_n <- function(n){

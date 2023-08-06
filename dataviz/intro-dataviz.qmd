@@ -1,9 +1,5 @@
 # Data Visualization {.unnumbered}
 
-```{r, echo=FALSE}
-img_path <- "img"
-```
-
 Looking at the numbers and character strings that define a dataset is rarely useful. To convince yourself, print and stare at the US murders data table:
 
 ```{r, message=FALSE, warning=FALSE}

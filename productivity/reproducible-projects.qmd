@@ -1,28 +1,10 @@
 # Reproducible projects with markdown
 
-```{r, include=FALSE}
-if(knitr::is_html_output()){
-  knitr::opts_chunk$set(out.width = "500px", 
-                        out.extra='style="display: block; margin-left: auto; margin-right: auto; background-color: #000; padding:3px;"')
-} else{
-  knitr::opts_chunk$set(out.width = "45%")
-}
-```
-
-
 The final product of a data analysis project is often a report. Many scientific publications can be thought of as a final report of a data analysis. The same is true for news articles based on data, an analysis report for your company, or lecture notes for a class on how to analyze data. The reports are often on paper or in a PDF that includes a textual description of the findings along with some figures and tables resulting from the analysis.
 
 Imagine that after you finish the analysis and the report, you are told that you were given the wrong dataset, you are sent a new one and you are asked to run the same analysis with this new dataset. Or what if you realize that a mistake was made and need to re-examine the code, fix the error, and re-run the analysis? Or imagine that someone you are training wants to see your code and be able to reproduce the results to learn about your approach?
 
 Situations like the ones just described are actually quite common for a data scientist. Here, we describe how you can keep your data science projects organized with RStudio so that re-running an analysis is straight-forward. We then demonstrate how to generate reproducible reports with quarto, or R markdown, and the **knitR** package in a way that will greatly help with recreating reports with minimal work. This is possible due to the fact that R markdown documents permit code and textual descriptions to be combined into the same document, and the figures and tables produced by the code are automatically added to the document.
-
-```{r, echo=FALSE}
-img_path <- "img/"
-screenshots <- list.files(file.path(img_path, "windows-screenshots"))
-screenshots <- file.path(img_path, "windows-screenshots", screenshots)
-mac_screenshots <- list.files(file.path(img_path, "mac-screenshots"))
-mac_screenshots <- file.path(img_path,"mac-screenshots", mac_screenshots)
-```
 
 ## RStudio projects
 
@@ -30,41 +12,31 @@ RStudio provides a way to keep all the components of a data analysis project org
 
 To start a project, click on *File* and then *New Project*. Often we have already created a folder to save the work, as we did in Section @sec-prep-project and we select *Existing Directory*. Here we show an example in which we have not yet created a folder and select the *New Directory* option.
 
-```{r, echo=FALSE}
-knitr::include_graphics(screenshots[49:50]) 
-```
+![](img/win/win-img-49.png)
+![](img/win/win-img-50.png)
 
 Then, for a data analysis project, you usually select the *New Project* option:
 
-```{r, echo=FALSE, out.width="70%"}
-knitr::include_graphics(screenshots[51]) 
-```
+![](img/win/win-img-51.png)
 
 Now you will have to decide on the location of the folder that will be associated with your project, as well as the name of the folder. When choosing a folder name, just like with file names, make sure it is a meaningful name that will help you remember what the project is about. As with files, we recommend using lower case letters, no spaces, and hyphens to separate words. We will call the folder for this project *my-first-project*. This will then generate a *Rproj* file called *my-first-project.Rproj* in the folder associated with the project. We will see how this is useful a few lines below.
 
-```{r, echo=FALSE, out.width="70%"}
-knitr::include_graphics(screenshots[52]) 
-```
+![](img/win/win-img-52.png)
 
 You will be given options on where this folder should be on your filesystem. In this example, we will place it in our home folder, but this is generally not good practice. As we described in Section @sec-prep-project in the Unix chapter, you want to organize your filesystem following a hierarchical approach and with a folder called *projects* where you keep a folder for each project.
 
-```{r, echo=FALSE, out.width="70%"}
-knitr::include_graphics(screenshots[53]) 
-```
+![](img/win/win-img-53.png)
 
 When you start using RStudio with a project, you will see the project name in the upper right corner. This will remind you what project this particular RStudio session belongs to. When you open an RStudio session with no project, it will say *Project: (None)*.
 
 When working on a project, all files will be saved and searched for in the folder associated with the project. Below, we show an example of a script that we wrote and saved with the name *code.R*. Because we used a meaningful name for the project, we can be a bit less informative when we name the files. Although we do not do it here, you can have several scripts open at once. You simply need to click *File*, then *New File* and pick the type of file you want to edit.
 
-```{r, echo=FALSE, out.width="70%"}
-knitr::include_graphics(screenshots[54]) 
-```
+![](img/win/win-img-54.png)
 
 One of the main advantages of using Projects is that after closing RStudio, if we wish to continue where we left off on the project, we simply double click or open the file saved when we first created the RStudio project. In this case, the file is called *my-first-project.Rproj*. If we open this file, RStudio will start up and open the scripts we were editing.
 
-```{r, echo=FALSE, out.width="45%"}
-knitr::include_graphics(screenshots[55:56]) 
-```
+![](img/win/win-img-55.png)
+![](img/win/win-img-56.png)
 
 Another advantage is that if you click on two or more different Rproj files, you start new RStudio and R sessions for each.
 
@@ -76,15 +48,12 @@ In R, we can produce literate programming documents using Quarto or R Markdown. 
 
 In RStudio, you can start either a Quarto or R markdown document by clicking on *File*, *New File*, then *Quarto Document* or *R Markdown*, respectively. You will then be asked to enter a title and author for your document. We are going to prepare a report on gun murders so we will give it an appropriate name. You can also decide what format you would like the final report to be in: HTML, PDF, or Microsoft Word. Later, we can easily change this, but here we select html as it is the preferred format for debugging purposes:
 
-```{r, echo=FALSE, out.width="45%"}
-knitr::include_graphics(screenshots[104:105]) 
-```
+![](img/win/win-img-104.png)
+![](img/win/win-img-105.png)
 
 This will generate a template file:
 
-```{r, echo=FALSE, out.width="70%"}
-knitr::include_graphics(screenshots[106]) 
-```
+![](img/win/win-img-106.png)
 
 As a convention, we use `qmd` and `Rmd` suffixes for Quarto and R markdown files, respectively.
 
@@ -163,15 +132,11 @@ We will not cover more details here, but as you become more experienced with R M
 
 We use the **knitR** package to compile Quarto or R markdown documents. The specific function used to compile is the `knit` function, which takes a filename as input. RStudio provides a button that makes it easier to compile the document. For the screenshot below, we have edited the document so that a report on gun murders is produced. You can see the file here: <https://raw.githubusercontent.com/rairizarry/murders/master/report.qmd>. You can now click on the `Render` button:
 
-```{r, echo=FALSE}
-knitr::include_graphics(screenshots[107]) 
-```
+![](img/win/win-img-107.png)
 
 Note that the first time you click on the *Render* button, a dialog box may appear asking you to install packages you need.
 <!--
-```{r, echo=FALSE}
-knitr::include_graphics(screenshots[108]) 
-```
+![](img/win/win-img-108.png)
 -->
 Once you have installed the packages, clicking *Render* will compile your Quarto file and the resulting document will pop up.
 
@@ -181,24 +146,15 @@ This particular example produces an html document which you can see in your work
 
 We can also produce documents that render on GitHub using `format: gfm`, which stands for GitHub flavored markdown.
 <!--
-```{r, echo=FALSE}
-knitr::include_graphics(screenshots[110]) 
-```
+![](img/win/win-img-110.png)
 --> This will produce a markdown file, with suffix `md`, that renders nicely on GitHub. Because we have uploaded these files to GitHub, you can click on the `md` file and you will see the report as a webpage:
 
-````{=html}
 <!--
 
-```{r, echo=FALSE}
-knitr::include_graphics(screenshots[124]) 
-```
+![](img/win/win-img-124.png)
 
 -->
-````
-
-```{r, echo=FALSE}
-knitr::include_graphics(screenshots[125]) 
-```
+![](img/win/win-img-125.png)
 
 This is a convenient way to share your reports.
 
@@ -229,15 +185,12 @@ mkdir data rdas
 
 In the next section we will use create an RStudio project. In RStudio we go to *File* and then *New Project...* and when given the options we pick *Existing Directory*. We then write the full path of the `murders` directory created above.
 
-```{r, echo=FALSE, out.width="45%"}
-knitr::include_graphics(screenshots[101:102])
-```
+![](img/win/win-img-101.png)
+![](img/win/win-img-102.png)
 
 Once you do this, you will see the `rdas` and `data` directories you created in the RStudio *Files* tab.
 
-```{r, echo=FALSE, out.width="70%"}
-knitr::include_graphics(screenshots[103])
-```
+![](img/win/win-img-103.png)
 
 Keep in mind that when we are in this project, our default working directory will be `~/projects/murders`. You can confirm this by typing `getwd()` into your R session. This is important because it will help us organize the code when we need to write file paths. **Pro tip: always use relative paths in code for data science projects. These should be relative to the default working directory.** The problem with using full paths is that your code is unlikely to work on filesystems other than yours since the directory structures will be different. This includes using the home directory `~` as part of your path.
 
@@ -338,14 +291,12 @@ git push
 
 We can continue adding and committing each file, but it might be easier to use RStudio. To do this, start the project by opening the Rproj file. The git icons should appear and you can add, commit and push using these.
 
-```{r, echo=FALSE, out.width="30%"}
-knitr::include_graphics(screenshots[c(119, 121, 122)])
-```
+![](img/win/win-img-119.png)
+![](img/win/win-img-121.png)
+![](img/win/win-img-122.png)
 
 We can now go to GitHub and confirm that our files are there. <!--
-```{r, echo=FALSE}
-knitr::include_graphics(screenshots[124]) 
-```
+![](img/win/win-img-124.png)
 --> You can see a version of this project, organized with Unix directories, on GitHub[^reproducible-projects-1]. You can download a copy to your computer by using the `git clone` command on your terminal. This command will create a directory called `murders` in your working directory, so be careful where you call it from.
 
 [^reproducible-projects-1]: https://github.com/rairizarry/murders
@@ -354,6 +305,3 @@ knitr::include_graphics(screenshots[124])
 git clone https://github.com/rairizarry/murders.git
 ```
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(out.width = NULL, out.extra = NULL)
-```

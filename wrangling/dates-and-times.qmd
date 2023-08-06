@@ -77,7 +77,6 @@ month(dates, label = TRUE)
 lubridate::month(dates, label = TRUE)
 ```
 
-
 Another useful set of functions are the _parsers_ that convert strings into dates. The function `ymd` assumes the dates are in the format YYYY-MM-DD and tries to parse as well as possible.
 
 ```{r}
@@ -136,7 +135,6 @@ now() |> second()
 
 The package also includes a function to parse strings into times as well as parsers for time objects that include dates:
 
-
 ```{r}
 x <- c("12:34:56")
 hms(x)
@@ -169,9 +167,7 @@ polls_us_election_2016 |>
   geom_point()
 ```
 
-
 ## Exercises
-
 
 In the previous exercise section, we wrangled data from a PDF file containing vital statistics from Puerto Rico. We did this for the month of September. Below we include code that does it for all 12 months.
 
@@ -224,7 +220,6 @@ dat <- map_df(str_split(pdf_text(fn), "\n"), function(s){
     
 
 5\. Remake the plot above but this time plot deaths against the day of the year, for example, Jan 12, 2016 and Jan 12, 2017 are both day 12. Use color to denote the different years. Hint: use the __lubridate__ function `yday`.
-
 
     
 6\. Remake the plot above but, this time, use two different colors for before and after September 20, 2017.

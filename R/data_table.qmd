@@ -127,7 +127,6 @@ x[,a := 2]
 y
 ```
 
-
 ### Subsetting
 
 With **dplyr**, we filtered like this:
