@@ -31,7 +31,7 @@ knitr::include_graphics(file.path(img_path,"html-code.png"))
 
 Because this code is accessible, we can download the HTML file, import it into R, and then write programs to extract the information we need from the page. However, once we look at HTML code, this might seem like a daunting task. But we will show you some convenient tools to facilitate the process. To get an idea of how it works, here are a few lines of code from the Wikipedia page that provides the US murders data:
 
-```
+```html
 <table class="wikitable sortable">
 <tr>
 <th>State</th>

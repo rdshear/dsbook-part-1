@@ -272,7 +272,6 @@ process_file <- function(source_location, target_location)
 
 base_dir <- "~/Projects/dsbook-part-1"
 target_dir <- base_dir
-target_dir <- "~/temp/run-08051412"
 
 file.list <- list.files(
   path = base_dir,
