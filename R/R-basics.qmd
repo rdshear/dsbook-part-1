@@ -49,10 +49,9 @@ dat |>
         plot.margin = unit(c(1,1,1,1), "cm")) 
 ```
 
-```{=html}
 <!--(Source:
 [Ma’ayan Rosenzweigh/ABC News](https://abcnews.go.com/blogs/headlines/2012/12/us-gun-ownership-homicide-rate-higher-than-other-developed-countries/), Data from UNODC Homicide Statistics) -->
-```
+
 Or even worse, this version from [everytown.org](https://everytownresearch.org):
 
 ```{r murder-rate-example-2, echo=FALSE, out.width="70%"}
